@@ -2,21 +2,18 @@ import time
 
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-ALPHABET = 'ab'
+ALPHABET = 'abc'
 
-start_time = 0
+class Stopwatch():
+    def start(self):
+        self.start_time = time.time()
+    def stop(self):
+        return time.time() - self.start_time
+
+
 
 class GameOverException(Exception):
     pass
-
-def timer_start():
-    global start_time
-    start_time = time.time()
-
-def timer_stop():
-    global start_time
-    time_passed = time.time() - start_time # calculate difference since start
-    return time_passed
 
 def quit():
     raise SystemExit('Exiting...')
@@ -34,7 +31,9 @@ def game_start():
             typed_letter = input(f'Please type the letter ({letter}): ')
             
             if first_letter:
-                timer_start()
+                # Start timer on first character
+                timer = Stopwatch()
+                timer.start()
                 first_letter = False
             
             if typed_letter == letter:
@@ -44,7 +43,7 @@ def game_start():
                 raise GameOverException('Sorry, that was the wrong letter!')
         
         finished = True
-        time_passed = timer_stop()
+        time_passed = timer.stop()
         
         print(f'Well done! You finished in {time_passed} seconds!')
         
@@ -63,13 +62,14 @@ def menu_print(choices):
 def menu():
     choices = [
         ('Start game',game_start),
-        ('Exit',quit),
-        ]
+        ('Exit',quit),]
     
     menu_choice = None
 
     while not menu_choice:
+
         menu_print(choices)
+        
         try: 
             menu_choice = int(input(f'Please select an option: '))
             choices[menu_choice-1][1]() #run function
