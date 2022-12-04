@@ -2,7 +2,7 @@ import time
 
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
-ALPHABET = 'abc'
+ALPHABET = ALPHABET[:5]
 
 class Stopwatch():
     def start(self):
@@ -26,33 +26,36 @@ def game_start():
     first_letter = True
     
     while not finished:
-        for letter in ALPHABET:
             
-            typed_letter = input(f'Please type the letter ({letter}): ')
-            
-            if first_letter:
-                # Start timer on first character
-                timer = Stopwatch()
-                timer.start()
-                first_letter = False
-            
+
+        print('Please type the following characters in order...')
+        for i in reversed(range(1,4)):
+            print(f'Starting in {i} seconds..')
+            time.sleep(1)
+        input('Press enter to start, then start typing as fast as you can!')
+
+        # Start timer 
+        timer = Stopwatch()
+        timer.start()
+        
+        typed_letters = input(f'{ALPHABET}: ')
+        
+        time_passed = timer.stop()
+        
+        # User is done, now check if it was correct
+        for i, letter in enumerate(ALPHABET):
+            typed_letter = typed_letters[i]
+
             if typed_letter == letter:
                 # correct letter was typed, continue to next
                 continue
             else:
-                raise GameOverException('Sorry, that was the wrong letter!')
+                raise GameOverException(f'Sorry, you typed {typed_letter} instead of {letter}, you lose!')
         
         finished = True
-        time_passed = timer.stop()
         
-        print(f'Well done! You finished in {time_passed} seconds!')
-        
-         
-        
-        
-                
-
-
+        print(f'Well done! All letters were in correct order.')
+        print(f'{time_passed} seconds elapsed')
 
 def menu_print(choices):
     print('Hello, would you like to do?')
