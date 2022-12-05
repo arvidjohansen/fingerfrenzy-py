@@ -1,4 +1,13 @@
 import time
+import mysql.connector
+
+mydb = mysql.connector.connect(
+      host="localhost",
+      user="fingerfrenzy",
+      password="Arvid123",
+      database="fingerfrenzy"
+    )
+
 
 
 ALPHABET = 'abcdefghijklmnopqrstuvwxyz'
@@ -20,6 +29,33 @@ def menu_print(choices):
     print('Hello, would you like to do?')
     for number, (title, func) in enumerate(choices,start=1):
             print(f'({number}) - {title}')
+
+def save_highscore(score, name):
+    # Writes new highscores to database
+    mycursor = mydb.cursor(score, name)
+
+    sql = "INSERT INTO highscores (score, name) VALUES (%s, %s)"
+    val = (score, name)
+    print(f'SQL-STATEMENT: {sql}')
+    mycursor.execute(sql, val)
+
+    mydb.commit()
+
+    print(mycursor.rowcount, "record inserted.")
+
+def view_highscores():
+    # Fetches and prints all highscores in database
+    mycursor = mydb.cursor()
+
+    mycursor.execute("SELECT * FROM highscores order by score")
+
+    myresult = mycursor.fetchall()
+
+    print('*'*20)
+    print(f'---- HIGHSCORES ----' )
+    print('*'*20)
+    for x in myresult:
+        print(f'{x[1]} {x[0]}')
 
 def game_start():
     print('Starting game...')
@@ -53,12 +89,19 @@ def game_start():
                 raise GameOverException(f'Sorry, you typed {typed_letter} instead of {letter}, you lose!')
         
         finished = True
+        
         print(f'Well done! All letters were in correct order.')
         print('%.5f seconds elapsed' % (time_passed))
+
+        name = input('What is your name?')
+
+        # Insert record into database
+        save_highscore(time_passed, name)
 
 def menu():
     choices = [
         ('Start game',game_start),
+        ('View highscores', view_highscores),
         ('Exit',quit),]
     menu_choice = None
 
